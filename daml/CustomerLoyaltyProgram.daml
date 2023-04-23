@@ -1,0 +1,75 @@
+module  CustomerLoyaltyProgram where
+
+
+template CLPAccount
+    with
+     customer:Party
+     airline:Party
+     name: Text
+     address:Text
+     email: Text
+     phone:Optional Text
+     dob: Date
+     accountTimeStamp: Time
+     points: Numeric 2
+
+    where
+        signatory customer,airline
+
+
+template CLPApplication
+    with
+     customer:Party
+     airline:Party
+     name: Text
+     address:Text
+     email: Text
+     phone:Optional Text
+     appTimestamp:Time
+     dob: Date
+
+    where
+        signatory customer
+        observer  airline
+
+        choice SubmitApplication:  ContractId CLPApplication
+            with 
+                customer:Party
+                airline:Party
+                name: Text
+                address:Text
+                email: Text
+                phone:Optional Text
+                appTimestamp:Time
+                dob: Date
+            controller customer
+                do
+                 create CLPApplication with
+                    customer = customer
+                    airline = airline
+                    name = name
+                    address = address
+                    email=email
+                    phone = phone
+                    appTimestamp = appTimestamp
+                    dob = dob 
+        choice AcceptApplication: ContractId  CLPAccount
+            with
+                accountTimestamp: Time
+                points:Numeric 2
+            controller  airline
+                do create  CLPAccount with
+                    accountTimeStamp = accountTimestamp
+                    points = points  
+                    customer = customer
+                    airline = airline
+                    name = name
+                    address = address
+                    email=email
+                    phone = phone
+                    dob = dob   
+        choice RejectApplication: ()
+            with
+                app: ContractId CLPApplication
+            controller airline 
+                do exercise app Archive
