@@ -1,0 +1,78 @@
+module Case1 where
+
+-- Define the participant roles
+data Role = Manager | Employee
+  deriving (Eq, Ord, Show)
+
+-- Define the case state
+data CaseStatus = New | InProgress | Closed
+  deriving (Eq, Ord, Show)
+
+-- Define the case template
+template Case
+  with
+    owner: Party
+    title: Text
+    description: Text
+    status: CaseStatus
+    manager: Party
+    employee: Party
+  where
+    signatory owner
+    observer manager
+    observer employee
+    
+    -- Define the create case choice
+    choice CreateCase : ContractId Case
+      with
+        title: Text
+        description: Text
+        manager: Party
+        employee: Party
+      controller owner
+      do create this with
+        status = New
+        
+    -- Define the assign manager choice
+    choice AssignManager : ()
+      with
+        newManager: Party
+      controller manager
+      do assert (status == New)
+         archive this
+         create this with
+           owner = owner
+           title = title
+           description = description
+           status = InProgress
+           manager = newManager
+           employee = employee
+        
+    -- Define the assign employee choice
+    choice AssignEmployee : ()
+      with
+        newEmployee: Party
+      controller manager
+      do assert (status == InProgress)
+         archive this
+         create this with
+           owner = owner
+           title = title
+           description = description
+           status = InProgress
+           manager = manager
+           employee = newEmployee
+    
+    -- Define the close case choice
+    choice CloseCase : ()
+      controller employee
+      do assert (status == InProgress)
+         archive this
+         create this with
+           owner = owner
+           title = title
+           description = description
+           status = Closed
+           manager = manager
+           employee = employee
+

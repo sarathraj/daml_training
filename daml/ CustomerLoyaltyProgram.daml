@@ -1,0 +1,14 @@
+module  CustomerLoyaltyProgram where
+
+template BankAccount
+    with
+     customer:Party
+     airline:Party
+     points: Numeric
+     name: Text
+     address:Text
+     email: Text
+     phone:Optional Text
+     appTimestamp:Time
+     dob: Date
+     accountTimeStamp: Time

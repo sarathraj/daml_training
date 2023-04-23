@@ -1,0 +1,59 @@
+module Fun1 where
+
+import Daml.Script
+import DA.List (head, tail,sort)
+
+
+
+increment : Int -> Int 
+increment x = x+1
+
+
+add:Int -> Int -> Int
+add x y = x+ y 
+
+
+
+sub x y = x+ y
+
+data PersonalRecord = PersonalRecord with 
+    name : Text
+    id:Int
+     deriving (Show,Eq)
+
+class Reachout  i o where
+    greet: i -> o
+
+instance  Reachout   PersonalRecord Text where
+        greet myRecord = "Hello " <> myRecord.name
+
+testFun1: Script()
+testFun1 = script do
+  debug $ increment 1
+  debug (increment 4)
+  debug $ add 1 2 
+  debug $ sub 3 1 
+  let 
+    k:Int
+    k=10
+  let l = [1,2,3]
+  let ll = ["sarath","rijo","mijo"]
+  debug $(k)
+  debug $ show l
+  debug $ show ll
+  debug $ show (head ll)
+  debug $ show (tail ll)
+  debug $ show (sort ll)
+  let song = [("do", "a deer, a female deer"), ("re", "a drop of golden sun"), ("mi", "a name, I call myself"), ("fa", "a long long way to run")]
+  --debug $ show song
+  debug $ show (take 1 song)
+  let somePersonal = PersonalRecord with
+        name = "sarath"
+        id = 33
+  debug $ show (somePersonal.name) 
+  debug $ show (somePersonal)  
+  let message: Text =  greet somePersonal 
+  debug $ show (message)  
+
+
+  
